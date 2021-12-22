@@ -3,12 +3,34 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="~/Scripts/jquery-3.6.0.min.js"></script>
-    <!-- moved these to the BadgeLogout Page. Leaving them here for now in case something breaks    -->
-    <script type="text/javascript" src="~/Scripts/badgeLogout.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="./Scripts/TechExercise.js"></script>
+    <link rel="stylesheet" href="./Styles/TechExercise.css" />
     <title>Technical Exercise</title>
 </head>
 <body>
-    <div>test</div>
+    <div id="AllSetHeader" class="genMargin">Calculate All Sets</div>
+    <button id="RSAllButton">Run All Sets</button>
+    <div id="SetContainer">
+        <div>Total Sets: </div>
+        <div id="TotalSetCount"></div>
+
+    </div>
+    <div id="SetDetailsContainer" class="genMargin">
+        <div id="SetDetailLabels" class="genMargin">Set Details:</div>
+        <div id="setContainerTwo">
+            <div class="miniContainer">
+                <div id="SetNameLabel">Set Name: </div>
+                <div id="SetNameValue" class="genMargin"></div>
+            </div>
+            <div class="miniContainer">
+                <div id="TotalProjectLabel">Total Project Count: </div>
+                <div id="TotalProjectCount"></div>
+            </div>
+            
+        </div>
+        
+    </div>
+
 </body>
 </html>

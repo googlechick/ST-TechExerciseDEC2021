@@ -1,0 +1,43 @@
+﻿body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /*align-items: center;*/
+    background: #f2f2f2;
+    font-family: Verdana;
+}
+/*General or Global Settings*/
+.genMargin {
+    margin:0 0 20px 0;
+}
+.miniContainer {
+    display:flex;
+    flex-direction:row;
+}
+#AllSetHeader {
+
+}
+#SetContainer {
+    display: flex;
+    flex-direction: row;
+    flex: 0 1 50px;
+}
+#setContainerTwo {
+    flex-direction:row;
+}
+#RSAllButton {
+    width: 100px;
+    margin:0 0 20px 0;
+}
+#TotalSetCount,#TotalProjectCount {
+    margin: 0 0 0 20px;
+}
+#SetDetailsContainer {
+    display:flex;
+    flex-direction:column;
+}
+#setContainerTwo {
+    display:flex;
+    flex-direction:column;
+    background-color:green;
+}
