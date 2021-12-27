@@ -52,6 +52,6 @@
 .IndivSets {
     margin:0 0 10px 0;
 }
-div[projecttype] {
+div[projecttype], .daybreakdown {
     margin:0 0 0 10px;
 }

@@ -196,7 +196,21 @@ CalculateSets = function () {
             //        FullDayCount: null
             //    }]
             //}
-
+            //'Set6': {
+            //    SetName: 'Set Six (temp project)',
+            //    ProjectCount: null,
+            //    Projects: [{
+            //        ProjectName: "Project 1",
+            //        TotalDayCount: null,
+            //        StartDate: "9/1/2015",
+            //        EndDate: '9/3/2015',
+            //        TotalDateArray: [],
+            //        CityType: 'High',
+            //        TravelDayCount: null,
+            //        FullDayCount: null
+            //    }]
+            //}
+            
         },
         //functions
         GetTotalSetsCount: function () {
@@ -338,6 +352,23 @@ CalculateSets = function () {
             var FinishedDate = new Date(m + "/" + d + "/" + y);
 
             return FinishedDate;
+        },
+        BuildHTMLforDayResults: function (ArrayOfDays, SetID)
+        {
+            var TotalHTMLString='';
+            for (var i = 0; i < ArrayOfDays.length; i++)
+            {
+                //reset mini container
+                TotalHTMLString += '<div class="miniContainer">';
+
+                //show day calculation breakdown
+                var DayBreakdownHTML = '<div SetType ="'+ SetID +'" id="DayBreakdown'+ SetID +'" class="daybreakdown label">Breakdown of Days: </div>';
+                TotalHTMLString += DayBreakdownHTML;
+                var TotalCostSetValueHTML = '<div SetType="' + SetID + '" id="DayBreakdownResult' + SetID + '"class="result">' + ArrayOfDays[i][0] + " " + ArrayOfDays[i][1] + " " + ArrayOfDays[i][2] + '</div>';
+                TotalHTMLString += TotalCostSetValueHTML;
+                TotalHTMLString += "</div>";
+            }
+            return TotalHTMLString;
         }
 
     };
@@ -351,7 +382,6 @@ CalculateSets = function () {
 
 $(document).ready(function () {
     var MainConfig = CalculateSets.Results.Config;
-
     //Set Elements
     MainConfig.RunScenarioButton = $('#RSButton');
     MainConfig.RunAllScenariosButton = $('#RSAllButton');
@@ -440,14 +470,7 @@ $(document).ready(function () {
                     //set total day array
                     MainProjects.TotalDateArray = DateCounts;
                     //add day count to page and to mainconfig object
-                    MainConfig.TotalDayCount = DateCounts.length;
-                    //reset mini container
-                    MiniContainerHTML = '<div class="miniContainer">';
-                    var TotalProjectDayCountHTML = '<div ProjectType="' + ProjectCounter + '" id="DaysInProjectLabel" class="label">Days in Project: </div>';
-                    MiniContainerHTML += TotalProjectDayCountHTML;
-                    var TotalProjectDayCountValueHTML = '<div ProjectType="' + ProjectCounter + '" id="DaysInProjectValue" class="result">' + DateCounts.length+'</div>';
-                    MiniContainerHTML += TotalProjectDayCountValueHTML;
-                    IndivSetsHTML += MiniContainerHTML += ClosingDiv;
+                    MainConfig.TotalDayCount = DateCounts.length;                  
                     //write back to object 
                     MainProjects.TotalDayCount = DateCounts.length;
 
@@ -463,6 +486,7 @@ $(document).ready(function () {
                     //check for unique days
                     var projectDuplicates = [];
                     var tempArray = [];
+                    var tempResultArray = [];
                     //fill temp to not mess with original values
                     tempArray = MainSets.Projects[0].TotalDateArray;
                     projectDuplicates = MainConfig.IdentifyDuplicateDays(tempArray);
@@ -474,27 +498,31 @@ $(document).ready(function () {
                         var FullArray = [];
                         //remove duplicates - but leave original occurrence
                         tempArray = MainConfig.RemoveDuplicateDays(tempArray);
-                        if (tempArray.length > 1) {
-                            //
-                        } else {
-                            //only one day left? Travel day - get first item
-                            TravelArray.push(tempArray.shift());
-                            //Is high or low city cost?
-                            var TotalCostinSet = MainConfig.CalculateTotalCost(FullArray.length, TravelArray.length, CurrentProjectCityType);
-                            //set appropriate object for set
-                            MainSets.TotalCost = TotalCostinSet;
-                            //now that cost is posted, let's add to HTML
-                            //reset mini container
-                            MiniContainerHTML = '<div class="miniContainer">';
-                            var TotalCostSetHTML = '<div SetType="' + SetCounter + '" id="TotalCostSet" class="label">Total Cost in Set: </div>';
-                            MiniContainerHTML += TotalCostSetHTML;
-                            var TotalCostSetValueHTML = '<div SetType="' + SetCounter + '" id="TotalCostValueSet" class="result">$' + TotalCostinSet + '</div>';
-                            MiniContainerHTML += TotalCostSetValueHTML;
-                            IndivSetsHTML += MiniContainerHTML += ClosingDiv;
-                        }//end one day left in array
+                        
+                        //only one day left? Travel day - get first item and city type - multi-dimentional array
+                        TravelArray.push(tempArray.shift());
+                        //city type - multi - dimentional array to validate result
+                        tempResultArray.push([TravelArray[0], MainSets.Projects[0].CityType.toUpperCase(), MainConfig.DayType.Travel.toUpperCase()]);
+                        //Is high or low city cost?
+                        var TotalCostinSet = MainConfig.CalculateTotalCost(FullArray.length, TravelArray.length, CurrentProjectCityType);
+                        //set appropriate object for set
+                        MainSets.TotalCost = TotalCostinSet;
+                        //add in appropriate amount of days to site
+                        var CompleteHTMLString = MainConfig.BuildHTMLforDayResults(tempResultArray, SetCounter);
+                        IndivSetsHTML += CompleteHTMLString;
+                        //now that cost is posted, let's add to HTML
+                        //reset mini container
+                        MiniContainerHTML = '<div class="miniContainer">';
+                        var TotalCostSetHTML = '<div SetType="' + SetCounter + '" id="TotalCostSet" class="label">Total Cost in Set: </div>';
+                        MiniContainerHTML += TotalCostSetHTML;
+                        var TotalCostSetValueHTML = '<div SetType="' + SetCounter + '" id="TotalCostValueSet" class="result">$' + TotalCostinSet + '</div>';
+                        MiniContainerHTML += TotalCostSetValueHTML;
+                        IndivSetsHTML += MiniContainerHTML += ClosingDiv;
+                        
                     } else {
                         //get travel days and full day counts
                         var tempArray = [];
+                        var resultArray = [];
                         //fill temp to not mess with original values
                         tempArray = MainProjects.TotalDateArray;
                         var TravelArray = [];
@@ -502,16 +530,29 @@ $(document).ready(function () {
                         //last and first days are travel, grab them
                         //take away last item in array
                         TravelArray.push(tempArray.pop());
+                        //build the day breakdown array
+                        resultArray.push([TravelArray[0], MainSets.Projects[0].CityType.toUpperCase(), MainConfig.DayType.Travel.toUpperCase()]);
                         //get first item
                         TravelArray.push(tempArray.shift());
                         //remaining days are to be pushed into fullArray
                         FullArray = tempArray;
+                        //continue to build day breakdown
+                        for (var b = 0; b < FullArray.length; b++)
+                        {
+                            //finish building day breakdown
+                            resultArray.push([FullArray[b], MainSets.Projects[0].CityType.toUpperCase(), MainConfig.DayType.Full.toUpperCase()]);
+                        }
+                        //grab last item
+                        resultArray.push([TravelArray.at(-1), MainSets.Projects[0].CityType.toUpperCase(), MainConfig.DayType.Travel.toUpperCase()]);
                         //Now, we need to calculate the totals based on city cost
                         //Is high or low city cost?
                         var TotalCostinSet = MainConfig.CalculateTotalCost(FullArray.length, TravelArray.length, CurrentProjectCityType);
                         //set appropriate object for set
                         MainSets.TotalCost = TotalCostinSet;
                         //now that cost is posted, let's add to HTML
+                        //add in appropriate amount of days to site
+                        var CompleteHTMLString = MainConfig.BuildHTMLforDayResults(resultArray.reverse(), SetCounter);
+                        IndivSetsHTML += CompleteHTMLString;
                         //reset mini container
                         MiniContainerHTML = '<div class="miniContainer">';
                         var TotalCostSetHTML = '<div SetType="' + SetCounter + '" id="TotalCostSet" class="label">Total Cost in Set: </div>';
@@ -598,6 +639,7 @@ $(document).ready(function () {
                             resultArr.push([UniqueResultsArray[b][0], UniqueResultsArray[b][1], MainConfig.DayType.Travel]);
                         }
                         b++;
+                        
                     }//end while
                     //now that we have our appropriate items divvyed up
                     //we need to calculate our totals and then apply our 
@@ -634,6 +676,9 @@ $(document).ready(function () {
                     //set appropriate object for set
                     MainSets.TotalCost = TotalCostinSet;
                     //now that cost is posted, let's add to HTML
+                    //add in appropriate amount of days to site
+                    var CompleteHTMLString = MainConfig.BuildHTMLforDayResults(resultArr, SetCounter);
+                    IndivSetsHTML += CompleteHTMLString;
                     //reset mini container
                     MiniContainerHTML = '<div class="miniContainer">';
                     var TotalCostSetHTML = '<div SetType="' + SetCounter + '" id="TotalCostSet" class="label">Total Cost in Set: </div>';
